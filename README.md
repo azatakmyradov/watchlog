@@ -27,14 +27,13 @@ After installation, publish the configuration file:
 php artisan vendor:publish --provider="Akmyradov\WatchLog\WatchLogServiceProvider"
 ```
 
-This will create a `config/watchlog.php` file. Update it with your WatchLog API credentials:
+This will create a `config/watchlog.php` file. Update values in the .env with your WatchLog API credentials:
 
-```php
-return [
-    'base_url' => env('WATCHLOG_BASE_URL', 'https://api.watchlog.com'),
-    'project_id' => env('WATCHLOG_PROJECT_ID'),
-    'secret' => env('WATCHLOG_SECRET'),
-];
+```env
+WATCHLOG_BASE_URL=""
+WATCHLOG_PROJECT_ID=1
+WATCHLOG_SECRET=""
+WATCHLOG_DRIVER=""
 ```
 
 ## Usage
