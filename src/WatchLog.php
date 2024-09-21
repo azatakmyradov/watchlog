@@ -18,13 +18,13 @@ class WatchLog
     public function __construct()
     {
         if (! in_array($this->getDriver(), $this->drivers) && $this->getDriver()) {
-            throw new Exception('WatchLog driver: '.$this->driver.' not found');
+            throw new Exception('WatchLog driver: '.$this->getDriver().' not found');
         }
     }
 
     public function getDriver(): ?string
     {
-        return config('wathclog.driver');
+        return config('watchlog.driver');
     }
 
     public function getUrl(): string
@@ -56,7 +56,7 @@ class WatchLog
             'context' => $context,
         ];
 
-        match ($this->driver) {
+        match ($this->getDriver()) {
             'sync' => ProcessLog::dispatchSync($data),
             'queue' => ProcessLog::dispatch($data),
         };
