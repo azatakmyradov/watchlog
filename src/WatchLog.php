@@ -13,17 +13,18 @@ use Psr\Log\LogLevel;
 
 class WatchLog
 {
-    protected string $driver;
-
     protected array $drivers = ['sync', 'queue'];
 
     public function __construct()
     {
-        $this->driver = config('watchlog.driver');
-
-        if (! in_array($this->driver, $this->drivers)) {
+        if (! in_array($this->getDriver(), $this->drivers) && $this->getDriver()) {
             throw new Exception('WatchLog driver: '.$this->driver.' not found');
         }
+    }
+
+    public function getDriver(): ?string
+    {
+        return config('wathclog.driver');
     }
 
     public function getUrl(): string
