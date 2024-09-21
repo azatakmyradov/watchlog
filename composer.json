@@ -1,0 +1,32 @@
+{
+    "name": "azatakmyradov/watchlog",
+    "description": "Watch logs from your application",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Akmyradov\\WatchLog\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Azat Akmyradov",
+            "email": "azat@akmyradov.me"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "illuminate/support": "^11.23",
+        "illuminate/http": "^11.23"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Akmyradov\\WatchLog\\WatchLogServiceProvider"
+            ],
+            "aliases": {
+                "Debugbar": "Akmyradov\\WatchLog\\Facades\\WatchLog"
+            }
+        }
+    }
+}
