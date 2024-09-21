@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Akmyradov\WatchLog;
 
+use Akmyradov\WatchLog\Jobs\ProcessLog;
+use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
@@ -11,14 +13,27 @@ use Psr\Log\LogLevel;
 
 class WatchLog
 {
-    protected string $url;
+    protected string $driver;
 
-    protected PendingRequest $client;
+    protected array $drivers = ['sync', 'queue'];
 
     public function __construct()
     {
-        $this->url = sprintf('%s/api/projects/%d/logs', config('watchlog.base_url'), config('watchlog.project_id'));
-        $this->client = Http::withHeaders([
+        $this->driver = config('watchlog.driver');
+
+        if (! in_array($this->driver, $this->drivers)) {
+            throw new Exception('WatchLog driver: '.$this->driver.' not found');
+        }
+    }
+
+    public function getUrl(): string
+    {
+        return sprintf('%s/api/projects/%d/logs', config('watchlog.base_url'), config('watchlog.project_id'));
+    }
+
+    public function createClient(): PendingRequest
+    {
+        return Http::withHeaders([
             'Accept' => 'application/json',
             'Authorization' => 'Bearer '.config('watchlog.secret'),
         ]);
@@ -31,14 +46,19 @@ class WatchLog
 
     public function log(string $level, string $message, array $context = [])
     {
-        $this->client->post($this->url, [
+        $data = [
             'message' => $message,
             'environment' => config('app.env'),
             'level' => $level,
             'origin' => collect(request()->ips())->join(','),
             'user' => auth()?->user(),
             'context' => $context,
-        ]);
+        ];
+
+        match ($this->driver) {
+            'sync' => ProcessLog::dispatchSync($data),
+            'queue' => ProcessLog::dispatch($data),
+        };
     }
 
     public function emergency(string $message, array $context = [])
